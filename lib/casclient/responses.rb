@@ -4,6 +4,9 @@ module CASClient
     attr_reader :failure_code, :failure_message
     
     def check_and_parse_xml(raw_xml)
+      # Horrible patch to stop the REXML parser triggering a 'singleton could not be dumped'
+      # error when source document starts with a <?xml ?> declaration.
+      raw_xml.sub!(/<\?xml[^\?]*\?>\s*/, '')
       begin
         doc = REXML::Document.new(raw_xml)
       rescue REXML::ParseException => e
